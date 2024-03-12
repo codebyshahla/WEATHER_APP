@@ -6,13 +6,38 @@ export default {
       UserName: '',
       Email: '',
       Password: '',
-      ConfirmPassword: ''
+      ConfirmPassword: '',
+      passwordError: '',
+      confirmPasswordError: ''
     }
   },
   methods: {
     handleSubmit() {
-      console.log('Form submitted!')
-      console.log(this.UserName, this.Email, this.Password, this.ConfirmPassword)
+      // Check if the password is valid
+      if (!this.validatePassword()) {
+        // Set the error message for password validation
+        this.passwordError = 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.';
+        return; // Stop form submission if password is not valid
+      }
+      
+      // Check if passwords match
+      if (this.Password !== this.ConfirmPassword) {
+        // Set the error message for password mismatch
+        this.confirmPasswordError = 'Passwords do not match.';
+        return; // Stop form submission if passwords don't match
+      }
+      
+      // Clear any previous error messages
+      this.passwordError = '';
+      this.confirmPasswordError = '';
+      
+      // Proceed with form submission
+      console.log('Form submitted!');
+      console.log(this.UserName, this.Email, this.Password, this.ConfirmPassword);
+    },
+    validatePassword() {
+      const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      return strongPasswordRegex.test(this.Password);
     }
   }
 }
@@ -55,6 +80,8 @@ export default {
           class="w-full p-1 border border-solid border-gray-300 rounded-md box-border outline-none"
           placeholder="Enter your Password"
         />
+        <!-- Display error message if password is not valid -->
+        <span v-if="passwordError" class="text-red-500">{{ passwordError }}</span>
       </div>
       <div class="mb-3">
         <label for="confirmPassword" class="text-gray-700 font-normal">Confirm Password:</label>
@@ -65,6 +92,8 @@ export default {
           class="w-full p-1 border border-solid border-gray-300 rounded-md box-border outline-none"
           placeholder="Confirm your Password"
         />
+        <!-- Display error message if passwords don't match -->
+        <span v-if="confirmPasswordError" class="text-red-500">{{ confirmPasswordError }}</span>
       </div>
       <button
         type="submit"
